@@ -9,11 +9,11 @@ items:
   spec:                         
     storageClassName: manual    
     capacity:                   
-      storage: 3Gi              
+      storage: 30Gi              
     accessModes:                
       - ReadWriteOnce           
     hostPath:                   
-      path: "/apps/opt/che-vol" 
+      path: "/Users/eriksonmurrugarra/Projects/K8/volume" 
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -55,13 +55,13 @@ items:
       app: che
     name: che
   data:
-    CHE_HOST: "MY_IP"
+    CHE_HOST: "192.168.99.100.nio.io"
     CHE_PORT: "8080"
-    CHE_API: "http://MY_IP/api"
-    CHE_WEBSOCKET_ENDPOINT:  ws://MY_IP/api/websocket
+    CHE_API: "http://192.168.99.100.nio.io/api"
+    CHE_WEBSOCKET_ENDPOINT:  ws://192.168.99.100.nio.io/api/websocket
     CHE_DEBUG_SERVER: "true"
     CHE_INFRASTRUCTURE_ACTIVE: kubernetes
-    CHE_INFRA_KUBERNETES_BOOTSTRAPPER_BINARY__URL: http://MY_IP/agent-binaries/linux_amd64/bootstrapper/bootstrapper
+    CHE_INFRA_KUBERNETES_BOOTSTRAPPER_BINARY__URL: http://192.168.99.100.nio.io/agent-binaries/linux_amd64/bootstrapper/bootstrapper
     CHE_INFRA_KUBERNETES_MACHINE__START__TIMEOUT__MIN: "5"
     CHE_INFRA_KUBERNETES_MASTER__URL: ""
     CHE_INFRA_KUBERNETES_OAUTH__TOKEN: ""
@@ -80,25 +80,25 @@ items:
     CHE_OAUTH_GITHUB_CLIENTID: ""
     CHE_OAUTH_GITHUB_CLIENTSECRET: ""
     CHE_PREDEFINED_STACKS_RELOAD__ON__START: "false"
-    JAVA_OPTS: "-XX:MaxRAMFraction=2 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dsun.zip.disableMemoryMapping=true -Xms20m "
+    JAVA_OPTS: ""
     CHE_WORKSPACE_AUTO_START: "false"
     CHE_INFRA_KUBERNETES_INGRESS_ANNOTATIONS__JSON: '{"nginx.ingress.kubernetes.io/rewrite-target": "/","nginx.ingress.kubernetes.io/ssl-redirect": "false","nginx.ingress.kubernetes.io/proxy-connect-timeout": "3600","nginx.ingress.kubernetes.io/proxy-read-timeout": "3600"}'
-# - apiVersion: extensions/v1beta1
-#   kind: Ingress
-#   metadata:
-#     name: che-ingress
-#     annotations:
-#       nginx.ingress.kubernetes.io/rewrite-target: /
-#       nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-#       nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
-#   spec:
-#     rules:
-#     - host: eclipse
-#       http:
-#         paths:
-#         - backend:
-#             serviceName: che-host
-#             servicePort: 8080
+- apiVersion: extensions/v1beta1
+  kind: Ingress
+  metadata:
+    name: che-ingress
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+  spec:
+    rules:
+    - host: 192.168.99.100.nio.io
+      http:
+        paths:
+        - backend:
+            serviceName: che-host
+            servicePort: 8080
 - apiVersion: extensions/v1beta1
   kind: Deployment
   metadata:
@@ -263,7 +263,7 @@ items:
                 key: CHE_INFRA_KUBERNETES_INGRESS_ANNOTATIONS__JSON
                 name: che
           image: eclipse/che-server:6.1.0
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:
               path: /api/system/state
